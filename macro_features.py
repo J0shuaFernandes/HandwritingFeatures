@@ -3,7 +3,6 @@ import numpy as np
 import math
 import cv2
 
-
 class MacroFeatures:
 	def __init__(self, img):
 		self.ret, self.thresh = cv2.threshold(img, 127, 255, 0)

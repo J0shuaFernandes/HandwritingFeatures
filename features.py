@@ -3,25 +3,34 @@ import numpy as np
 import math
 import cv2
 
-def positive_negative_slope(a, b):
+def positive_negative(points):
+	a, b = points[0], points[1]
 	m = (b[1]-a[1])/(b[0]-a[0])
-	print(m)
-	"""
+
 	if m > 0:
 		return True
 	else:
 		return False
-	"""
 
-def horizontal_vertical_slope(a, b):
+
+def direction(points):
+	a, b = points[0], points[1]
+	dy, dx = b[1]-a[1], b[0]-a[1]
+
 	t5 = math.tan( (5*math.pi)/180 ) # vertical
 	t60 = math.sqrt(3)/2 # horizontal 
 	
-	if dy != 0 and abs(dx/dy) < t5:
+	vertical = dy != 0 and abs(dx/dy) < t5
+	horizontal = dx != 0 and abs(dy/dx) < t60
+
+	if vertical and not horizontal:  
 		return 'vertical'
 	
-	elif dx != 0 and abs(dy/dx) < t60:
+	elif horizontal and not vertical:
 		return 'horizontal'
+
+	else:
+		return 'zero'
 
 def normalize(arr, t_min, t_max):
     norm_arr = []
@@ -66,22 +75,13 @@ def no_of_contours(img):
 
 	return interior_contours, exterior_contours
 
-# measures of stroke formation
-def slope_components(approx): 
-	n_slopes = len(approx) - 1
-	print(n_slopes)
-
-	n_pos, n_neg = 0, 0
-	n_ver, n_hor = 0, 0
-
-	return n_pos, n_neg, n_hor, n_ver
-
 # F1   F2  F3   F4 F5 F6   F7   F8   F9   F10 F11
 # 0.50 188 184K 15 14 0.31 0.13 0.28 0.28 8.8 25
 	
 if __name__ == '__main__':
-	img = cv2.imread('imgs/word-1.png', 0)
-
+	img = cv2.imread('imgs/the-5.png', 0)
+	#edges = cv2.Canny(img,100,200)
+	
 	ret, thresh = cv2.threshold(img, 127, 255, 0)
 	contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 	contours = list(contours)
@@ -89,24 +89,44 @@ if __name__ == '__main__':
 	hierarchy = hierarchy[0]
 
 	n_slopes = 0
-	for c in contours[:1]:
-		epsilon = 0.018 * cv2.arcLength(c, True)
-		approx = cv2.approxPolyDP(c, epsilon, True)	
+	n_pos, n_neg = 0, 0
+	n_ver, n_hor = 0, 0
+
+	#print('No of contours: {}'.format(len(contours)))
+	for c in contours:
+		epsilon = 0.018*cv2.arcLength(c, True)
+		approx = list(cv2.approxPolyDP(c, epsilon, True))	
 		n_slopes = n_slopes + (len(approx)-1)
-		cv2.drawContours(img, [approx], -1, 0, 2)
 
-		print(approx)
+		slopes = []
+		while len(approx) > 1:
+			slopes.append([ list((approx[0])[0]), list((approx[1])[0]) ])
+			approx.pop(0)
+
+		for slope in slopes:
+			if positive_negative(slope):
+				n_pos += 1
+			else:
+				n_neg += 1
+
+			if direction(slope) == 'vertical':
+				n_ver += 1
+			elif direction(slope) == 'horizontal':
+				n_hor += 1
+
+
+	print(n_pos/n_slopes, n_neg/n_slopes)
+	print(n_ver/n_slopes, n_hor/n_slopes)
+
+		#cv2.drawContours(img, [approx], -1, 0, 2)
+		#print('No of points: {}'.format(len(approx)))
 		#slope_components(approx)
+	
 
 
-	n_pos, n_neg = n_pos/slopes, n_neg/slopes
-	n_hor, n_ver = n_hor/slopes, n_ver/slopes
-	print(n_slopes)
-
-	#cv2.drawContours(img, contours, -1, 0, 3)
-	#cv2.drawContours(img, contours, 3, 0, 3)
-	#cnt = contours[1]
-	#cv2.drawContours(img, [cnt], 0, 0, 3)
+	#n_pos, n_neg = n_pos/slopes, n_neg/slopes
+	#n_hor, n_ver = n_hor/slopes, n_ver/slopes
+	#print(n_slopes)
 	
 	cv2.imshow("title", img)	
 	cv2.waitKey()
