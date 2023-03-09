@@ -1,7 +1,12 @@
+from bs4 import BeautifulSoup
+from PIL import Image
+
 import matplotlib.pyplot as plt
 import numpy as np
+import sqlite3
 import math
 import cv2
+import os
 
 def positive_negative(points):
 	a, b = points[0], points[1]
@@ -11,7 +16,6 @@ def positive_negative(points):
 		return True
 	else:
 		return False
-
 
 def direction(points):
 	a, b = points[0], points[1]
@@ -75,13 +79,8 @@ def no_of_contours(img):
 
 	return interior_contours, exterior_contours
 
-# F1   F2  F3   F4 F5 F6   F7   F8   F9   F10 F11
-# 0.50 188 184K 15 14 0.31 0.13 0.28 0.28 8.8 25
-	
-if __name__ == '__main__':
-	img = cv2.imread('imgs/the-5.png', 0)
-	#edges = cv2.Canny(img,100,200)
-	
+# measures of stroke formation
+def slope_components(img):
 	ret, thresh = cv2.threshold(img, 127, 255, 0)
 	contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 	contours = list(contours)
@@ -114,21 +113,92 @@ if __name__ == '__main__':
 			elif direction(slope) == 'horizontal':
 				n_hor += 1
 
-
-	print(n_pos/n_slopes, n_neg/n_slopes)
-	print(n_ver/n_slopes, n_hor/n_slopes)
-
-		#cv2.drawContours(img, [approx], -1, 0, 2)
-		#print('No of points: {}'.format(len(approx)))
-		#slope_components(approx)
+	if n_pos != 0: n_pos = round(n_pos/n_slopes, 2)
+	else: n_pos = n_pos
 	
+	if n_neg != 0: n_neg = round(n_neg/n_slopes, 2)
+	else: n_neg = n_neg
+
+	if n_ver != 0: n_ver = round(n_ver/n_slopes, 2)
+	else: n_ver = n_ver
+
+	if n_hor != 0: n_hor = round(n_hor/n_slopes, 2)
+	else: n_hor = n_hor
+
+	return n_pos, n_neg, n_ver, n_hor
 
 
-	#n_pos, n_neg = n_pos/slopes, n_neg/slopes
-	#n_hor, n_ver = n_hor/slopes, n_ver/slopes
-	#print(n_slopes)
-	
-	cv2.imshow("title", img)	
-	cv2.waitKey()
-	#print(measures_of_pen_pressure(img))
-	#print(no_of_contours(img))
+#conn = sqlite3.connect('forms.db')
+#cur = conn.cursor()
+
+names = sorted([x.split('.')[0] for x in os.listdir('xml')])
+
+
+name = names[names.index('a01-058')]
+img = Image.open('formsA-D/'+name+'.png')
+
+file = open('xml/'+name+'.xml', 'r')
+contents = file.read()
+file.close()
+
+soup = BeautifulSoup(contents, 'xml')
+word = soup.find('word', {'text':'the'})
+chldn = word.findChildren()
+
+if len(chldn) == 1: # if word is annotated as one block
+	attrs = chldn[0].attrs
+	x, y = int(attrs['x']), int(attrs['y'])
+	width, height = int(attrs['width']), int(attrs['height'])
+
+elif len(chldn) > 1: # separate blocks
+	attrs = chldn[0].attrs
+	x, y = int(attrs['x']), int(attrs['y'])
+	height = int(attrs['height'])
+	width = 0 #int(attrs['width']), int(attrs['height'])
+	for alph in word.findChildren():
+		attrs = alph.attrs
+		width = width + int(attrs['width'])
+
+the_img = img.crop((x, y, x+width, y+height))
+the_img = np.array(the_img)
+f, g, h, i = slope_components(the_img)
+"""
+for name in names:
+	print(name)
+	img = Image.open('formsA-D/'+name+'.png')
+
+	file = open('xml/'+name+'.xml', 'r')
+	contents = file.read()
+	file.close()
+
+	soup = BeautifulSoup(contents, 'xml')
+	word = soup.find('word', {'text':'the'})
+	chldn = word.findChildren()
+
+	if len(chldn) == 1: # if word is annotated as one block
+		attrs = chldn[0].attrs
+		x, y = int(attrs['x']), int(attrs['y'])
+		width, height = int(attrs['width']), int(attrs['height'])
+
+	elif len(chldn) > 1: # separate blocks
+		attrs = chldn[0].attrs
+		x, y = int(attrs['x']), int(attrs['y'])
+		height = int(attrs['height'])
+		width = 0 #int(attrs['width']), int(attrs['height'])
+		for alph in word.findChildren():
+			attrs = alph.attrs
+			width = width + int(attrs['width'])
+
+	the_img = img.crop((x, y, x+width, y+height))
+	the_img = np.array(the_img)
+
+	a, b, c = measures_of_pen_pressure(the_img)
+	d, e = no_of_contours(the_img)
+	f, g, h, i = slope_components(the_img)
+
+	cur.execute('insert into Features Values(?,?,?,?,?,?,?,?,?,?)', (name,a,b,c,d,e,f,g,h,i,))
+
+conn.commit()
+cur.close()
+conn.close()
+"""
