@@ -98,6 +98,7 @@ def slope_components(img):
 		n_slopes = n_slopes + (len(approx)-1)
 
 		slopes = []
+		print(slopes)
 		while len(approx) > 1:
 			slopes.append([ list((approx[0])[0]), list((approx[1])[0]) ])
 			approx.pop(0)
@@ -113,6 +114,7 @@ def slope_components(img):
 			elif direction(slope) == 'horizontal':
 				n_hor += 1
 
+	"""
 	if n_pos != 0: n_pos = round(n_pos/n_slopes, 2)
 	else: n_pos = n_pos
 	
@@ -124,6 +126,7 @@ def slope_components(img):
 
 	if n_hor != 0: n_hor = round(n_hor/n_slopes, 2)
 	else: n_hor = n_hor
+	"""
 
 	return n_pos, n_neg, n_ver, n_hor
 
@@ -160,8 +163,9 @@ elif len(chldn) > 1: # separate blocks
 		width = width + int(attrs['width'])
 
 the_img = img.crop((x, y, x+width, y+height))
+#the_img.show()
 the_img = np.array(the_img)
-f, g, h, i = slope_components(the_img)
+#f, g, h, i = slope_components(the_img)
 """
 for name in names:
 	print(name)
