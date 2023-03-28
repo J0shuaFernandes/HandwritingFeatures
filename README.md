@@ -4,7 +4,7 @@ Handwritten Style Conversion using Image to Image Translation
 
 # Handwriting Features
 
-Following are the handwriting features that are extracted by features.py:
+Following are the handwriting features extracted by features.py:
 
 **Measures of Pen Pressure**
 
