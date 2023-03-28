@@ -2,7 +2,7 @@
 
 Handwritten Style Conversion using Image to Image Translation
 
-# Handwriting Features
+# Algorithm
 
 Following are the handwriting features extracted by features.py:
 
