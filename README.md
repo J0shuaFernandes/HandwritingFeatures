@@ -1,4 +1,4 @@
-# hr-style
+# Handwriting Feature Extraction
 
 Handwritten Style Conversion using Image to Image Translation
 
@@ -6,18 +6,18 @@ Handwritten Style Conversion using Image to Image Translation
 
 Following are the handwriting features extracted by features.py:
 
-**Measures of Pen Pressure**
+## Measures of Pen Pressure 
 
 1. Gray-level entropy
 2. Gray-level threshold value
 3. No. of black pixels
 
-**Measures of Writing Movements**
+## Measures of Writing Movements
 
 4. No. of Interior Contours
 5. No. of Exterior Contours 
 
-**Measures of Stroke Formation**
+## Measures of Stroke Formation
 
 6. Positive Slope Components
 7. Negative Slope Components
