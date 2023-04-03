@@ -1,10 +1,20 @@
 # Handwriting Features
 
-Handwriting Features are used by Federal Document Examiners [Srihari et al.](https://cedar.buffalo.edu/papers/articles/Individuality_Handwriting_2002.pdf) 
+Implementation of the methods for extracting handwriting features proposed by [Srihari et al.](https://cedar.buffalo.edu/papers/articles/Individuality_Handwriting_2002.pdf) 
+
+## Installation
+
+Clone the repository, go to the root level and execute `pip install .`
+
+## Usage
+`
+import hw_features
+hw_ features.all('sample.jpg')
+`
 
 ## Features
 
-Following are the handwriting features extracted
+Following are the handwriting features that are extracted
 
 ![hw_features](hw_features.JPG)
 
