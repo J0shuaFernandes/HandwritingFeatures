@@ -22,7 +22,7 @@ Following are the handwriting features that are extracted
 
 Measures of Pen Pressure indicate the darkness of writing as writes who would put more pressure would have darker writing while writers who wouldn’t put pressure would have lighter writing. There are three measures of pen pressure, i.e., gray-level distribution, gray-level threshold value and the number of black pixels.
 
-### Measures of Writing Movements
+### Measures of Writing Movement
 
 There are two measures of writing movement, interior and exterior contours. Given an image of handwritten text, the image is binarized and its contours are detected. Contours that are contained within a contour are called interior contours while contours that are not contained within any contour are called exterior contours. Writing that is more cursive would have more interior contours whereas straight 
 
