@@ -1,8 +1,4 @@
-from bs4 import BeautifulSoup
-from PIL import Image
-
 import numpy as np
-import sqlite3
 import math
 import cv2
 import os
@@ -64,6 +60,8 @@ def no_of_contours(img):
 	# no of interior and exterior contours
 	ret, thresh = cv2.threshold(img, 127, 255, 0)
 	contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	#contours = list(contours)
+	#contours.pop(0)
 	hierarchy = hierarchy[0]
 
 	interior_contours, exterior_contours = 0, 0 
@@ -117,12 +115,22 @@ def slope_components(img):
 
 	return n_pos, n_neg, n_ver, n_hor
 
+def all(img):
+	"""
+	Extracts all features in the following order:
+	1, 2, 3 => gl distribution, gl threshold value, no_black_pixels
+	4, 5 => interior Contours, exterior Contours
+	6, 7, 8, 9 => avg no of positive negative, vertical, horizontal slopes
+	"""
+	img = cv2.imread(img,0)
+
+	gl_dist, gl_thresh, no_black_pixels = measures_of_pen_pressure(img)
+	int_contours, ext_contours = no_of_contours(img)
+	pos, neg, vert, hori = slope_components(img)
+
+	return [gl_dist, gl_thresh, no_black_pixels, int_contours, ext_contours, 
+			pos, neg, vert, hori]
+
 if __name__ == '__main__':
-	img = Image.open('forms/'+name+'.png')
-
-	the_img = img.crop((x, y, x+width, y+height))
-	the_img = np.array(the_img)
-
-	a, b, c = measures_of_pen_pressure(the_img)
-	d, e = no_of_contours(the_img)
-	f, g, h, i = slope_components(the_img)
+	for y in [x for x in os.listdir('imgs/') if x.startswith('the')]:
+		print(all_features('imgs/'+y))

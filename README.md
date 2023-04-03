@@ -1,6 +1,6 @@
 # Handwriting Features
 
-Handwriting 
+Handwriting Features are used by Federal Document Examiners [Srihari et al.](https://cedar.buffalo.edu/papers/articles/Individuality_Handwriting_2002.pdf) 
 
 ## Features
 
@@ -8,7 +8,7 @@ Following are the handwriting features extracted
 
 ![hw_features](hw_features.JPG)
 
-#### Measures of Pen Pressure 
+### Measures of Pen Pressure 
 
 Measures of Pen Pressure indicate the darkness of writing as writes who would put more pressure would have darker writing while writers who wouldn’t put pressure would have lighter writing. There are three measures of pen pressure, i.e., gray-level distribution, gray-level threshold value and the number of black pixels.
 
