@@ -7,10 +7,10 @@ Implementation of the methods for extracting handwriting features proposed by [S
 Clone the repository, go to the root level and execute `pip install .`
 
 ## Usage
-`
+```
 import hw_features
 hw_ features.all('sample.jpg')
-`
+```
 
 ## Features
 
