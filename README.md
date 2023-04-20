@@ -9,7 +9,7 @@ Clone the repository, go to the root level and execute `pip install .`
 ## Usage
 ```
 import hw_features
-hw_ features.all('sample.jpg')
+hw_features.all('sample.jpg')
 ```
 
 ## Features
